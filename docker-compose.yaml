@@ -1,0 +1,8 @@
+services:
+  postgres:
+    image: postgres
+    ports:
+      - 5431:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: jwt_auth_dojo
