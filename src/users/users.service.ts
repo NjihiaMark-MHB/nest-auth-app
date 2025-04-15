@@ -25,7 +25,7 @@ export class UsersService {
     @Inject(DATABASE_CONNECTION)
     private pool: Pool,
   ) {
-    this.database = createDrizzleClient(pool);
+    this.database = createDrizzleClient(this.pool);
   }
 
   async createUser(user: CreateUserDto) {
