@@ -85,6 +85,26 @@ export class AuthService {
     }
   }
 
+  async verifyUserRefreshToken(
+    refreshToken: string,
+    userId: number,
+  ): Promise<Omit<typeof schema.users.$inferSelect, 'password'>> {
+    try {
+      const user = await this.usersService.getUserById(userId);
+      const refreshTokenMatches = await compare(
+        refreshToken,
+        user.refreshToken,
+      );
+      if (!refreshTokenMatches) {
+        throw new UnauthorizedException();
+      }
+      return user;
+    } catch (error) {
+      this.logger.error('Verify user refresh token error', error);
+      throw new UnauthorizedException('Refresh token is not valid');
+    }
+  }
+
   async verifyUser(email: string, password: string) {
     try {
       const user = await this.usersService.getUserByEmail(email);
