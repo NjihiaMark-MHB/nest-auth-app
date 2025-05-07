@@ -15,7 +15,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(user: typeof schema.users.$inferSelect, response: Response) {
+  async login(
+    user: typeof schema.users.$inferSelect,
+    response: Response,
+    redirect = false,
+  ) {
     try {
       const expirationMs = parseInt(
         this.configService.getOrThrow('JWT_ACCESS_TOKEN_EXPIRATION_MS'),
@@ -71,6 +75,13 @@ export class AuthService {
         secure: this.configService.get('NODE_ENV') === 'production',
         expires: expiresRefreshToken,
       });
+      if (redirect) {
+        const redirectUrl = new URL(
+          this.configService.getOrThrow('AUTH_UI_REDIRECT'),
+        );
+        redirectUrl.searchParams.append('userId', user.uuid);
+        return response.redirect(redirectUrl.toString());
+      }
 
       return response.json(userData);
     } catch (error) {
